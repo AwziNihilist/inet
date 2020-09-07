@@ -143,6 +143,7 @@ protected:
      * Add routes from request to the message.
      */
     void addRoutesToMsg(const Ptr<EigrpIpv4Message>& msg, const EigrpMsgReq *msgReq);
+    void removeLockedOnRoutes(const EigrpMsgReq *msgReq);
     void setRouteTlvMetric(EigrpWideMetricPar *msgMetric, EigrpWideMetricPar *rtMetric);
     /**
      * Creates request for sending of EIGRP message for RTP.

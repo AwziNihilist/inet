@@ -54,6 +54,7 @@ class EigrpRoute : public cObject
     int numSuccessors;                  /**< Number of successors for the route */
     bool updateSent;                    /**< Sent update with the route */
     int numOfMsgsSent;                  /**< Number of sent messages with the route */
+    bool locked;
 
     int referenceCounter;               /**< Counts amount of references to this object. */
 
@@ -68,7 +69,7 @@ class EigrpRoute : public cObject
 
     int decrementRefCnt() {return --referenceCounter; }
     void incrementRefCnt() { ++referenceCounter; }
-    int getRefCnt() {return referenceCounter; }
+    int getRefCnt() const {return referenceCounter; }
 
     int getRouteId() const {return routeId; }
     void setRouteId(int routeId) { this->routeId = routeId; }
@@ -97,6 +98,9 @@ class EigrpRoute : public cObject
     void setRouteMask(IPAddress routeMask) { this->routeMask = routeMask; }
 
     bool isActive() const { return replyStatusTable.size() > 0; }
+
+    bool isLocked() const { return locked; }
+    void setLocked(bool locked) { this->locked = locked; }
 
     EigrpRouteSource<IPAddress> *getSuccessor() const { return this->successor; }
     void setSuccessor(EigrpRouteSource<IPAddress> * successor) { this->successor = successor; }
@@ -254,6 +258,7 @@ EigrpRoute<IPAddress>::EigrpRoute(const IPAddress& address,const IPAddress& mask
 
     updateSent = false;
     numOfMsgsSent = 0;
+    locked = false;
 }
 
 template<typename IPAddress>

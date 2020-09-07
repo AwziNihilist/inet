@@ -64,6 +64,7 @@ std::ostream &operator<<(std::ostream &os, const EigrpRoute<IPAddress> &route)
     os << route.getRouteAddress() << "/" << getNetmaskLength(route.getRouteMask());
     os << "  queryOrigin:" << route.getQueryOrigin();
     os << "  replyStatus:" << route.getReplyStatusSum();
+    os << "  refCount:" << route.getRefCnt();
 
     return os;
 }
@@ -453,10 +454,14 @@ typename std::vector<EigrpRouteSource<IPAddress> *>::iterator EigrpTopologyTable
     EV_DEBUG << "EIGRP: remove route source " << route->getRouteAddress();
     EV_DEBUG << " via " << source->getNextHop() << " from TT" << endl;
 
-    if (route->getRefCnt() == 1 && !route->isActive() && route->getNumSentMsgs() == 0)
+    if (route->getRefCnt() == 1 && !route->isActive() && route->getNumSentMsgs() == 0 && !route->isLocked())
+    //if (route->getRefCnt() == 1 && !route->isActive() && route->getNumSentMsgs() == 0)
     {
         EV_DEBUG << "EIGRP: remove route info " << route->getRouteAddress() << ", it does not have any source" << endl;
         removeRouteInfo(route);
+    } else
+    {
+        route->decrementRefCnt();
     }
 
     delete source;

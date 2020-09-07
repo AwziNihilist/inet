@@ -749,6 +749,8 @@ void EigrpIpv4Pdm::processQueryPacket(Packet *pk, Ipv4Address& srcAddress, int i
             std::cout << "-----------------RESI SE JEDNA INTERROUTA Z QUERY-------------------------" << endl;
         src = processInterRoute(query->getInterRoutes(i), srcAddress, neigh->getNeighborId(), eigrpIface, &notifyDual, &isSourceNew);
 
+        //src->getRouteInfo()->incrementRefCnt();
+        src->getRouteInfo()->setLocked(true);
         /*if (src->getDelayedRemove() != 0)
         {
             std::cout << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUDGE" << endl;
@@ -927,6 +929,7 @@ Packet *EigrpIpv4Pdm::createQueryPacket(Ipv4Address& destAddress, EigrpMsgReq *m
     //addCtrInfo(msg, msgReq->getDestInterface(), destAddress);
 
 
+
     // Add route TLV
     if (routeCnt > 0) addRoutesToMsg(msg, msgReq);
 
@@ -936,6 +939,7 @@ Packet *EigrpIpv4Pdm::createQueryPacket(Ipv4Address& destAddress, EigrpMsgReq *m
     packet->insertAtBack(msg);
     return packet;
 }
+
 
 Packet *EigrpIpv4Pdm::createReplyPacket(Ipv4Address& destAddress, EigrpMsgReq *msgReq)
 {
@@ -947,14 +951,38 @@ Packet *EigrpIpv4Pdm::createReplyPacket(Ipv4Address& destAddress, EigrpMsgReq *m
     msg->setSeqNum(msgReq->getSeqNumber());
     //addCtrInfo(msg, msgReq->getDestInterface(), destAddress);
 
+
+
     // Add route TLV
     if (routeCnt > 0) addRoutesToMsg(msg, msgReq);
+    if (routeCnt > 0) removeLockedOnRoutes(msgReq);
 
     msg->setChunkLength(B(sizeOfMsg+routeCnt * 44));
 
     Packet *packet = new Packet();
     packet->insertAtBack(msg);
     return packet;
+}
+
+void EigrpIpv4Pdm::removeLockedOnRoutes(const EigrpMsgReq *msgReq)
+{
+    int reqCnt = msgReq->getRoutesArraySize();
+    EigrpRoute<Ipv4Address> *route = NULL;
+
+    for (int i = 0; i < reqCnt; i++)
+    {
+        EigrpMsgRoute req = msgReq->getRoutes(i);
+        route = eigrpTt->findRouteInfoById(req.routeId);
+
+        ASSERT(route != NULL);
+
+        route->setLocked(false);
+
+        if (route->getRefCnt()==0)
+        {
+            eigrpTt->removeRouteInfo(route);
+        }
+    }
 }
 
 void EigrpIpv4Pdm::addMessageHeader(const Ptr<EigrpMessage>& msg, int opcode, EigrpMsgReq *msgReq)
@@ -2026,14 +2054,13 @@ void EigrpIpv4Pdm::setDelayedRemove(int neighId, EigrpRouteSource<Ipv4Address> *
 {
     EigrpNeighbor<Ipv4Address> *neigh = eigrpNt->findNeighborById(neighId);
 
-
     ASSERT(neigh != NULL);
     neigh->setRoutesForDeletion(true);
     src->setDelayedRemove(neighId);
     src->setValid(true);    // Can not be invalid
 
 
-    if (strcmp(host->getName(),"R4")==0) std::cout << "DUAL: route via " << src->getNextHop() << " s routeID: " << src->getRouteId()  << "will be removed from TT after receiving Ack from neighbor" << endl;
+    if (strcmp(host->getName(),"R4")==0) std::cout << "DUAL: route via " << src->getNextHop() << " s routeID: " << src->getRouteId()  << " will be removed from TT after receiving Ack from neighbor" << endl;
 
 }
 

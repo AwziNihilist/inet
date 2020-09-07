@@ -984,6 +984,8 @@ void EigrpIpv6Pdm::addRoutesToMsg(const Ptr<EigrpIpv6Message>& msg, const EigrpM
         if ((source = eigrpTt->findRouteById(req.sourceId)) == NULL)
         { // Route was removed (only for sent Update messages to stub routers)
             route = eigrpTt->findRouteInfoById(req.routeId);
+            std::cout << "sourceId: " << req.sourceId << " routeId: " << req.routeId << " Originator: " << req.originator << endl;
+            std::cout << "Assert gon" << endl;
             ASSERT(route != NULL);
         }
         else

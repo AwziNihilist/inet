@@ -586,6 +586,8 @@ void EigrpIpv4Pdm::processAckPacket(Packet *pk, Ipv4Address& srcAddress, int ifa
 
     if (neigh->getRoutesForDeletion())
     { // Remove unreachable routes waiting for Ack from neighbor
+        if (strcmp(host->getName(),"R4")==0)
+            std::cout << "Prijal jsem ACK, Mazu co cekaji na smazani!" << endl;
         eigrpTt->delayedRemove(neigh->getNeighborId());
         neigh->setRoutesForDeletion(false);
     }
@@ -714,18 +716,61 @@ void EigrpIpv4Pdm::processQueryPacket(Packet *pk, Ipv4Address& srcAddress, int i
     printRecvMsg(query, srcAddress, ifaceId);
 
     int cnt = query->getInterRoutesArraySize();
-#ifdef EIGRP_DEBUG
-    EV_DEBUG << "     Route count:" << cnt << endl;
-#endif
 
+    if (strcmp(host->getName(),"R4")==0)
+    {
+        std::cout << " Route count:" << cnt << endl;
+        std::cout << "--Routes:--" << endl;
+
+        for (int i = 0; i < cnt; i++)
+        {
+            std::cout << "------------" << endl;
+            auto route = query->getInterRoutes(i);
+            std::cout << "typeHigh: " << +route.typeHigh << endl;
+            std::cout << "typeLow: " << +route.typeLow << endl;
+            std::cout << "afi: " << route.afi << endl;
+            std::cout << "tid: " << route.tid << endl;
+            std::cout << "routerID: " << route.routerID << endl;
+            std::cout << "EigrpRouteFlag SW: " << route.flags.SW << endl;
+            std::cout << "EigrpRouteFlag CD: " << route.flags.CD << endl;
+            std::cout << "EigrpRouteFlag ACTIVE: " << route.flags.active << endl;
+            std::cout << "nextHop: " << route.nextHop << endl;
+            std::cout << "destMask: " << route.destMask << endl;
+            std::cout << "destAddress: " << route.destAddress << endl;
+            std::cout << "------------" << endl;
+        }
+    }
+
+    if (strcmp(host->getName(),"R4")==0)
+        std::cout << "-----------------ZACINAJI SE RESIT ROUTY Z QUERY-------------------------" << endl;
     for (int i = 0; i < cnt; i++)
     {
+        if (strcmp(host->getName(),"R4")==0)
+            std::cout << "-----------------RESI SE JEDNA INTERROUTA Z QUERY-------------------------" << endl;
         src = processInterRoute(query->getInterRoutes(i), srcAddress, neigh->getNeighborId(), eigrpIface, &notifyDual, &isSourceNew);
+
+        /*if (src->getDelayedRemove() != 0)
+        {
+            std::cout << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUDGE" << endl;
+            src->setDelayedRemove(0);
+        }*/
+
         // Always notify DUAL
         eigrpDual->processEvent(EigrpDual<Ipv4Address>::RECV_QUERY, src, neigh->getNeighborId(), isSourceNew);
+        if (strcmp(host->getName(),"R4")==0)
+            std::cout << "-----------------VYRESINA SE JEDNA INTERROUTA Z QUERY-------------------------" << endl;
     }
+    if (strcmp(host->getName(),"R4")==0)
+        std::cout << "-----------------VSERCHNY ROUTY Z QUERY VERESENY-------------------------" << endl;
+
+    if (strcmp(host->getName(),"R4")==0)
+        std::cout << "posilaji se message requesty!" << endl;
     flushMsgRequests();
+    if (strcmp(host->getName(),"R4")==0)
+        std::cout << "Purge tabulky" << endl;
     eigrpTt->purgeTable();
+    if (strcmp(host->getName(),"R4")==0)
+            std::cout << "KONEC PURGU TABULKY" << endl;
 }
 
 void EigrpIpv4Pdm::processReplyPacket(Packet *pk, Ipv4Address& srcAddress, int ifaceId, EigrpNeighbor<Ipv4Address> *neigh)
@@ -964,7 +1009,10 @@ void EigrpIpv4Pdm::addRoutesToMsg(const Ptr<EigrpIpv4Message>& msg, const EigrpM
         if ((source = eigrpTt->findRouteById(req.sourceId)) == NULL)
         { // Route was removed (only for sent Update messages to stub routers)
             route = eigrpTt->findRouteInfoById(req.routeId);
+            std::cout << "sourceId: " << req.sourceId << " routeId: " << req.routeId << " Originator: " << req.originator << endl;
+            std::cout << "Assert gon" << endl;
             ASSERT(route != NULL);
+
         }
         else
         {
@@ -1984,9 +2032,9 @@ void EigrpIpv4Pdm::setDelayedRemove(int neighId, EigrpRouteSource<Ipv4Address> *
     src->setDelayedRemove(neighId);
     src->setValid(true);    // Can not be invalid
 
-#ifdef EIGRP_DEBUG
-    EV_DEBUG << "DUAL: route via " << src->getNextHop() << " will be removed from TT after receiving Ack from neighbor" << endl;
-#endif
+
+    if (strcmp(host->getName(),"R4")==0) std::cout << "DUAL: route via " << src->getNextHop() << " s routeID: " << src->getRouteId()  << "will be removed from TT after receiving Ack from neighbor" << endl;
+
 }
 
 

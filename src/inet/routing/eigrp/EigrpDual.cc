@@ -56,7 +56,7 @@ void EigrpDual<IPAddress>::invalidateRoute(EigrpRouteSource<IPAddress> *routeSrc
     if (routeSrc->isValid())
     {
         routeSrc->setValid(false);
-        EV_DEBUG << "DUAL: invalidate route via " << routeSrc->getNextHop() << " in TT" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: invalidate route via " << routeSrc->getNextHop() << " in TT" << endl;
     }
 }
 
@@ -74,11 +74,11 @@ void EigrpDual<IPAddress>::processEvent(DualEvent event, EigrpRouteSource<IPAddr
     if (event == NEIGHBOR_DOWN || event == INTERFACE_DOWN)
         source->setUnreachableMetric(); // Must be there
 
-    EV_DEBUG << "DUAL: " << eigrpDual::userMsgs[event];
-    EV_DEBUG << " for route " << route->getRouteAddress() << " via " << source->getNextHop();
-    EV_DEBUG << " (" << source->getMetric() << "/" << source->getRd() << ")" << endl;
-    EV_DEBUG << "QueryOrigin je: " << route->getQueryOrigin() <<" , replyStatusSum je: "<< route->getReplyStatusSum() <<endl;
-    EV_DEBUG << "Event: " << event << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: " << eigrpDual::userMsgs[event];
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << " for route " << route->getRouteAddress() << " via " << source->getNextHop();
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << " (" << source->getMetric() << "/" << source->getRd() << ")" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "QueryOrigin je: " << route->getQueryOrigin() <<" , replyStatusSum je: "<< route->getReplyStatusSum() <<endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "Event: " << event << endl;
     switch (route->getQueryOrigin())
     {
     case 0: // active state
@@ -142,7 +142,7 @@ void EigrpDual<IPAddress>::processQo0(DualEvent event, EigrpRouteSource<IPAddres
     case NEIGHBOR_DOWN:
     case INTERFACE_DOWN:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         if (route->getReplyStatusSum() == 0)
         { // As last reply from neighbor
@@ -164,7 +164,7 @@ void EigrpDual<IPAddress>::processQo0(DualEvent event, EigrpRouteSource<IPAddres
         break;
 
     default:
-        EV_DEBUG << "DUAL received invalid input event num. " << event << " in active state 0" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL received invalid input event num. " << event << " in active state 0" << endl;
         ASSERT(false);
         break;
     }
@@ -216,7 +216,7 @@ void EigrpDual<IPAddress>::processQo1Passive(DualEvent event, EigrpRouteSource<I
 
     default:
         ASSERT(false);
-        EV_DEBUG << "DUAL received invalid input event in passive state 0, skipped" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL received invalid input event in passive state 0, skipped" << endl;
         break;
     }
 }
@@ -248,7 +248,7 @@ void EigrpDual<IPAddress>::processQo1Active(DualEvent event, EigrpRouteSource<IP
 
     case RECV_REPLY:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         if (route->getReplyStatusSum() == 0) // Last reply
             processTransition15(event, source, route, neighborId);
@@ -260,7 +260,7 @@ void EigrpDual<IPAddress>::processQo1Active(DualEvent event, EigrpRouteSource<IP
     case NEIGHBOR_DOWN:
     case INTERFACE_DOWN:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         // Transition 9 should take precedence over transition 15 (fail of link
         // to S (as last reply) versus fail of link to not S (as last reply)
@@ -285,7 +285,7 @@ void EigrpDual<IPAddress>::processQo1Active(DualEvent event, EigrpRouteSource<IP
 
     default:
         ASSERT(false);
-        EV_DEBUG << "DUAL received invalid input event in active state 1, skipped" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL received invalid input event in active state 1, skipped" << endl;
         break;
     }
 }
@@ -321,7 +321,7 @@ void EigrpDual<IPAddress>::processQo2(DualEvent event, EigrpRouteSource<IPAddres
     case NEIGHBOR_DOWN:
     case INTERFACE_DOWN:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         if (route->getReplyStatusSum() == 0)
         { // As last reply from neighbor
@@ -344,7 +344,7 @@ void EigrpDual<IPAddress>::processQo2(DualEvent event, EigrpRouteSource<IPAddres
 
     default:
         ASSERT(false);
-        EV_DEBUG << "DUAL received invalid input event in active state 2, skipped" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL received invalid input event in active state 2, skipped" << endl;
         break;
     }
 }
@@ -379,7 +379,7 @@ void EigrpDual<IPAddress>::processQo3(DualEvent event, EigrpRouteSource<IPAddres
 
     case RECV_REPLY:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         if (route->getReplyStatusSum() == 0) // Last reply
             processTransition13(event, source, route, neighborId);
@@ -391,7 +391,7 @@ void EigrpDual<IPAddress>::processQo3(DualEvent event, EigrpRouteSource<IPAddres
     case NEIGHBOR_DOWN:
     case INTERFACE_DOWN:
         if ((hasReplyStatus = route->unsetReplyStatus(neighborId)) == true)
-            EV_DEBUG << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
+            if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "     Clear handle, reply status summary = " << route->getReplyStatusSum() << endl;
 
         // Transition 10 should take precedence over transition 13 (fail of link
         // to S (as last reply) versus fail of link to not S (as last reply)
@@ -416,7 +416,7 @@ void EigrpDual<IPAddress>::processQo3(DualEvent event, EigrpRouteSource<IPAddres
 
     default:
         ASSERT(false);
-        EV_DEBUG << "DUAL received invalid input event in active state 3, skipped" << endl;
+        if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL received invalid input event in active state 3, skipped" << endl;
         break;
     }
 }
@@ -427,7 +427,7 @@ void EigrpDual<IPAddress>::processQo3(DualEvent event, EigrpRouteSource<IPAddres
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition1(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (passive) to oij=1 (passive) by transition 1" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (passive) to oij=1 (passive) by transition 1" << endl;
 
     EigrpRouteSource<IPAddress> *successor = pdm->getBestSuccessor(route);
     if (successor == NULL)
@@ -445,7 +445,7 @@ void EigrpDual<IPAddress>::processTransition1(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition2(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (passive) to oij=1 (passive) by transition 2" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (passive) to oij=1 (passive) by transition 2" << endl;
 
     EigrpRouteSource<IPAddress> *successor;
     uint64_t oldDij;    // Dij before the event
@@ -490,7 +490,7 @@ void EigrpDual<IPAddress>::processTransition2(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition3(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (passive) to oij=3 (active) by transition 3" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (passive) to oij=3 (active) by transition 3" << endl;
     // Note: source is successor
 
     int numPeers = 0, numStubs = 0;
@@ -504,7 +504,7 @@ void EigrpDual<IPAddress>::processTransition3(int event, EigrpRouteSource<IPAddr
 
     // Send Query with actual distance via successor to all peers
     gotoActive = pdm->setReplyStatusTable(route, source, false, &numPeers, &numStubs);
-    EV_DEBUG << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
 
     if (gotoActive)
     {
@@ -522,7 +522,7 @@ void EigrpDual<IPAddress>::processTransition3(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition4(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (passive) to oij=1 (active) by transition 4" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (passive) to oij=1 (active) by transition 4" << endl;
 
     int numPeers = 0, numStubs = 0;
     bool gotoActive;
@@ -552,7 +552,7 @@ void EigrpDual<IPAddress>::processTransition4(int event, EigrpRouteSource<IPAddr
 
     // Start own diffusion computation
     gotoActive = pdm->setReplyStatusTable(route, source, true, &numPeers, &numStubs);
-    EV_DEBUG << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
     if (gotoActive)
     {
         pdm->sendQuery(IEigrpPdm<IPAddress>::UNSPEC_RECEIVER, route, oldSuccessor, true);
@@ -569,7 +569,7 @@ void EigrpDual<IPAddress>::processTransition4(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition5(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=2 (active) by transition 5" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=2 (active) by transition 5" << endl;
 
     route->setQueryOrigin(2);
 
@@ -579,7 +579,7 @@ void EigrpDual<IPAddress>::processTransition5(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition6(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 6" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 6" << endl;
 
     EigrpRouteSource<IPAddress> *oldSuccessor = pdm->getBestSuccessor(route);
     ASSERT(oldSuccessor != NULL);   // Old successor must be available until transition to passive state
@@ -598,7 +598,7 @@ void EigrpDual<IPAddress>::processTransition6(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition7(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 7" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 7" << endl;
 
     // Do not actualize Dij of route by new distance via successor (in transition to passive state DUAL can not detect change of Dij)
     // route->setDij(source->getMetric());
@@ -609,7 +609,7 @@ void EigrpDual<IPAddress>::processTransition7(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition8(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId, bool isSourceNew)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 8" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 8" << endl;
 
     if (source->isUnreachable() && isSourceNew)
         invalidateRoute(source);
@@ -618,7 +618,7 @@ void EigrpDual<IPAddress>::processTransition8(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition9(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (active) to oij=0 (active) by transition 9" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (active) to oij=0 (active) by transition 9" << endl;
 
     route->setQueryOrigin(0);
 
@@ -640,7 +640,7 @@ void EigrpDual<IPAddress>::processTransition9(int event, EigrpRouteSource<IPAddr
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition10(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=3 (active) to oij=2 (active) by transition 10" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=3 (active) to oij=2 (active) by transition 10" << endl;
 
     route->setQueryOrigin(2);
 
@@ -662,7 +662,7 @@ void EigrpDual<IPAddress>::processTransition10(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition11(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=0 (active) to oij=1 (active) by transition 11" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=0 (active) to oij=1 (active) by transition 11" << endl;
 
     int numPeers = 0, numStubs = 0;
     bool gotoActive;
@@ -670,7 +670,7 @@ void EigrpDual<IPAddress>::processTransition11(int event, EigrpRouteSource<IPAdd
     route->setQueryOrigin(1);
 
     gotoActive = pdm->setReplyStatusTable(route, source, false, &numPeers, &numStubs);
-    EV_DEBUG << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
     if (gotoActive)
     { // Start new diffusion computation
         int srcNeighbor = (neighborId != IEigrpPdm<IPAddress>::UNSPEC_RECEIVER) ? neighborId : IEigrpPdm<IPAddress>::UNSPEC_SENDER;
@@ -688,7 +688,7 @@ void EigrpDual<IPAddress>::processTransition11(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition12(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=2 (active) to oij=3 (active) by transition 12" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=2 (active) to oij=3 (active) by transition 12" << endl;
 
     int numPeers = 0, numStubs = 0;
     bool gotoActive;
@@ -696,7 +696,7 @@ void EigrpDual<IPAddress>::processTransition12(int event, EigrpRouteSource<IPAdd
     route->setQueryOrigin(3);
 
     gotoActive = pdm->setReplyStatusTable(route, source, false, &numPeers, &numStubs);
-    EV_DEBUG << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: peers = " << numPeers << ", stubs = " << numStubs << endl;
     if (gotoActive)
     { // Start new diffusion computation
         pdm->sendQuery(IEigrpPdm<IPAddress>::UNSPEC_RECEIVER, route, source);
@@ -713,7 +713,7 @@ void EigrpDual<IPAddress>::processTransition12(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition13(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=3 (active) to oij=1 (passive) by transition 13" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=3 (active) to oij=1 (passive) by transition 13" << endl;
 
     EigrpRouteSource<IPAddress> *successor;
     // Old successor is originator of Query
@@ -767,7 +767,7 @@ void EigrpDual<IPAddress>::processTransition13(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition14(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=0 (active) to oij=1 (passive) by transition 14" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=0 (active) to oij=1 (passive) by transition 14" << endl;
 
     EigrpRouteSource<IPAddress> *successor = NULL, *oldSuccessor = NULL;
     uint64_t oldDij = route->getDij();
@@ -803,7 +803,7 @@ void EigrpDual<IPAddress>::processTransition14(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition15(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=1 (active) to oij=1 (passive) by transition 15" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=1 (active) to oij=1 (passive) by transition 15" << endl;
 
     EigrpRouteSource<IPAddress> *successor = NULL, *oldSuccessor = NULL;
     uint64_t oldDij = route->getDij();
@@ -849,7 +849,7 @@ void EigrpDual<IPAddress>::processTransition15(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition16(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, uint64_t dmin, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=2 (active) to oij=1 (passive) by transition 16" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=2 (active) to oij=1 (passive) by transition 16" << endl;
 
     EigrpRouteSource<IPAddress> *successor;
     // Old successor is originator of Query
@@ -890,7 +890,7 @@ void EigrpDual<IPAddress>::processTransition16(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition17(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 17" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 17" << endl;
 
     // Do not actualize Dij of route by new distance via successor (in transition to passive state DUAL can not detect change of Dij)
     // route->setDij(source->getMetric());
@@ -899,7 +899,7 @@ void EigrpDual<IPAddress>::processTransition17(int event, EigrpRouteSource<IPAdd
 template <typename IPAddress>
 void EigrpDual<IPAddress>::processTransition18(int event, EigrpRouteSource<IPAddress> *source, EigrpRoute<IPAddress> *route, int neighborId, bool isSourceNew)
 {
-    EV_DEBUG << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 18" << endl;
+    if (strcmp(pdm->getmyname(),"R4")==0) std::cout << "DUAL: transit from oij=" << route->getQueryOrigin() << " (active) to oij=" << route->getQueryOrigin() << " (active) by transition 18" << endl;
 
     if (source->isUnreachable() && isSourceNew)
         invalidateRoute(source);

@@ -108,6 +108,7 @@ class IEigrpPdm
      * @param neighId ID of neighbor
      * @param src route
      */
+    virtual const char* getmyname() = 0;
     virtual void setDelayedRemove(int neighId, EigrpRouteSource<IPAddress> *src) = 0;
     /**
      * Sends update message to all stub neighbors.

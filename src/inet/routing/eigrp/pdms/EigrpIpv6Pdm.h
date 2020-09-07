@@ -332,6 +332,7 @@ protected:
     void setReliability(int reliability, int interfaceId) override {this->eigrpIft->findInterfaceById(interfaceId)->setReliability(reliability);}
 
     //-- INTERFACE IEigrpPdm;
+    const char* getmyname() override {return this->host->getName();}
     void sendUpdate(int destNeighbor, EigrpRoute<Ipv6Address> *route, EigrpRouteSource<Ipv6Address> *source, bool forcePoisonRev, const char *reason) override;
     void sendQuery(int destNeighbor, EigrpRoute<Ipv6Address> *route, EigrpRouteSource<Ipv6Address> *source, bool forcePoisonRev = false) override;
     void sendReply(EigrpRoute<Ipv6Address> *route, int destNeighbor, EigrpRouteSource<Ipv6Address> *source, bool forcePoisonRev = false, bool isUnreachable = false) override;

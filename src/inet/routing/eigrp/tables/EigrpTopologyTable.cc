@@ -50,6 +50,8 @@ std::ostream &operator<<(std::ostream &os, const EigrpRouteSource<IPAddress> &so
         os << "  via " << source.getNextHop();
     os << " (" << source.getMetric() << "/" << source.getRd() << ")";
     os << ",  IF:" << source.getIfaceName() << "(" << source.getIfaceId() << ")";
+    os << ", RouteID:" << source.getRouteId() << " , SourceID: " << source.getSourceId();
+
     //os << "  originator:" << source.getOriginator();
 
     return os;

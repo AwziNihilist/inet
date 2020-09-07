@@ -444,7 +444,7 @@ void EigrpDeviceConfigurator::loadEigrpInterfacesConfig(cXMLElement *device, IEi
 void EigrpDeviceConfigurator::loadEigrpInterfaceParams(cXMLElement *eigrpIface, IEigrpModule<Ipv4Address> *eigrpModule, int ifaceId, const char *ifaceName)
 {
     int tempNumber;
-    bool tempBool, success;
+    bool success;
 
     cXMLElementList ifDetails = eigrpIface->getChildren();
     for (cXMLElementList::iterator ifElemIt = ifDetails.begin(); ifElemIt != ifDetails.end(); ifElemIt++)
